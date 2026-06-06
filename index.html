@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Codex UI</title>
+    <link rel="stylesheet" href="./src/styles.css" />
+  </head>
+  <body>
+    <main class="app-frame" aria-label="Codex App UI preview">
+      <section class="window-shell">
+        <header class="titlebar" aria-label="窗口">
+          <div class="traffic-lights" aria-hidden="true">
+            <span class="traffic red"></span>
+            <span class="traffic yellow"></span>
+            <span class="traffic green"></span>
+          </div>
+          <div class="titlebar-center">
+            <span class="project-name">codex-ui</span>
+            <span class="project-path">/Users/marco/github/codex-ui</span>
+          </div>
+          <div class="titlebar-spacer"></div>
+        </header>
+
+        <section class="conversation-shell">
+          <section class="connection-panel">
+            <div class="view-toolbar" aria-label="会话操作">
+              <button
+                class="view-button"
+                type="button"
+                id="sessionsButton"
+                aria-label="显示会话列表"
+                aria-pressed="false"
+                title="显示会话列表"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 7h16M4 12h16M4 17h16" />
+                </svg>
+              </button>
+              <button
+                class="view-button"
+                type="button"
+                id="newSessionButton"
+                aria-label="新建会话"
+                title="新建会话"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
+              </button>
+            </div>
+            <div class="status-toolbar" aria-label="会话状态">
+              <button class="status-pill" data-kind="ok" type="button">
+                connected
+              </button>
+            </div>
+          </section>
+
+          <aside class="session-drawer-wrap" id="sessionDrawer">
+            <nav class="session-drawer" aria-label="会话">
+              <div class="session-workspace-path">
+                /Users/marco/github/codex-ui
+              </div>
+              <div class="session-list" id="sessionList"></div>
+            </nav>
+          </aside>
+
+          <section class="workspace">
+            <section class="messages" id="messages" aria-live="polite"></section>
+          </section>
+
+          <section class="composer">
+            <div class="prompt-wrap" id="promptWrap">
+              <div class="slash-menu" id="slashMenu" hidden></div>
+              <textarea
+                id="composerInput"
+                rows="1"
+                placeholder="输入消息"
+                aria-label="输入消息"
+              ></textarea>
+              <button
+                class="send-button"
+                id="sendButton"
+                type="button"
+                title="发送"
+                aria-label="发送"
+                disabled
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 19V5M5 12l7-7 7 7" />
+                </svg>
+              </button>
+            </div>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <script src="./src/main.js"></script>
+  </body>
+</html>
