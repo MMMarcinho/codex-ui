@@ -1,0 +1,106 @@
+.windowShell {
+  display: grid;
+  width: min(1280px, 100%);
+  height: min(860px, 100%);
+  min-height: 0;
+  grid-template-rows: 38px minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow:
+    0 32px 80px rgba(0, 0, 0, 0.16),
+    0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.titlebar {
+  display: grid;
+  min-height: 0;
+  grid-template-columns: 120px minmax(0, 1fr) 120px;
+  align-items: center;
+  border-bottom: 1px solid #ececec;
+  background: #fbfbfb;
+  padding: 0 14px;
+}
+
+.trafficLights {
+  display: flex;
+  gap: 8px;
+}
+
+.traffic {
+  width: 12px;
+  height: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 999px;
+}
+
+.red {
+  background: #ff5f57;
+}
+
+.yellow {
+  background: #ffbd2e;
+}
+
+.green {
+  background: #28c840;
+}
+
+.titlebarCenter {
+  display: flex;
+  min-width: 0;
+  justify-content: center;
+  gap: 8px;
+  color: #8b8b8b;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.projectName {
+  overflow: hidden;
+  max-width: 36vw;
+  color: #3c3c3c;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.projectPath {
+  overflow: hidden;
+  max-width: 42vw;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.windowBody {
+  min-height: 0;
+}
+
+@media (max-width: 760px) {
+  .windowShell {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .titlebar {
+    grid-template-columns: 74px minmax(0, 1fr) 12px;
+    padding: 0 10px;
+  }
+
+  .trafficLights {
+    gap: 6px;
+  }
+
+  .traffic {
+    width: 10px;
+    height: 10px;
+  }
+
+  .projectPath {
+    display: none;
+  }
+}

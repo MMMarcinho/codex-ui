@@ -1,23 +1,50 @@
 # codex-ui
 
-用于在 Web 侧展示接近 Codex App 的会话 UI 效果。
+开箱即用的 Codex 风格 React UI 组件库。
 
-当前版本参考了本地 `~/Desktop/code/ai/aima-workspace` 中
-`src/pages/workspace/cx/components/ConversationView` 的布局与样式：
+当前版本参考本地 `~/Desktop/code/ai/aima-workspace` 的
+`src/pages/workspace/cx/components/ConversationView`，把会话 UI 迁移成可复用
+React 组件，并提供 Vite demo 预览。
 
-- 顶部轻量会话工具条与状态 pill
-- hover/click 展开的左侧会话抽屉
-- 居中消息流、用户气泡、系统/工具输出块、代码块样式
-- 底部 Codex 风格 prompt bar、发送按钮和 slash command 菜单
+## 组件
 
-## 预览
+- `ConversationView`: Codex 风格会话主体，包含工具条、会话抽屉、消息流、输入框和 slash command 菜单。
+- `CodexWindow`: 桌面 app 风格窗口壳，可用于高保真预览。
+- 类型与 helper: `ConversationMessage`、`ConversationSession`、`conversationCapabilities`、`composerPlaceholder` 等。
 
-这个仓库目前是零依赖静态页面，直接打开 `index.html` 即可预览。
-
-也可以用任意静态服务器运行，例如：
+## 开发
 
 ```bash
-python3 -m http.server 4173
+npm install
+npm run dev
 ```
 
-然后访问 `http://localhost:4173`。
+## 构建
+
+```bash
+npm run build
+```
+
+## 使用
+
+```tsx
+import { CodexWindow, ConversationView } from 'codex-ui';
+import 'codex-ui/style.css';
+
+export function App() {
+  return (
+    <CodexWindow projectName="my-codex">
+      <ConversationView
+        mode="live"
+        ready
+        status="connected"
+        statusKind="ok"
+        sessions={sessions}
+        activeSessionId={activeSessionId}
+        messages={messages}
+        onSendMessage={sendMessage}
+      />
+    </CodexWindow>
+  );
+}
+```

@@ -1,0 +1,103 @@
+import type { ReactNode } from 'react';
+
+export type ConversationMode = 'live' | 'history' | 'subagent';
+
+export type ConversationSource =
+  | 'local-codex'
+  | 'aima-history'
+  | 'aima-subagent'
+  | 'demo';
+
+export type ConversationRole =
+  | 'user'
+  | 'assistant'
+  | 'system'
+  | 'tool'
+  | 'approval';
+
+export interface ConversationMessage {
+  id?: string;
+  role: ConversationRole;
+  text: string;
+  timestamp?: string;
+  itemId?: string;
+  streaming?: boolean;
+  requestId?: string;
+  decision?: string;
+}
+
+export interface ConversationSession {
+  id: string;
+  title: string;
+  subtitle?: string;
+  cwd?: string;
+  mode: ConversationMode;
+  source: ConversationSource;
+  readOnly: boolean;
+  requirementId?: number;
+  taskId?: number;
+  taskName?: string;
+  agentId?: string;
+  updatedAt?: string;
+  raw?: unknown;
+}
+
+export interface ConversationCapabilities {
+  mode: ConversationMode;
+  readOnly: boolean;
+  canSendMessage: boolean;
+  canApprove: boolean;
+  canSwitchLocalSession: boolean;
+}
+
+export interface ConversationOutput {
+  id: string;
+  text: string;
+}
+
+export interface ConversationSlashCommand {
+  name: string;
+  usage?: string;
+  description?: string;
+}
+
+export interface ConversationUserProfile {
+  name?: string;
+  jobNo?: string;
+  label?: string;
+  title?: string;
+}
+
+export interface ConversationViewModel {
+  session: ConversationSession;
+  messages: ConversationMessage[];
+}
+
+export interface ConversationViewProps {
+  mode: ConversationCapabilities['mode'];
+  ready: boolean;
+  status?: string;
+  statusKind?: 'ok' | 'pending' | 'warn' | 'error' | '';
+  loading?: boolean;
+  error?: string | null;
+  sessions: ConversationSession[];
+  activeSessionId?: string;
+  messages: ConversationMessage[];
+  outputs?: ConversationOutput[];
+  progress?: string;
+  capabilities?: ConversationCapabilities;
+  userProfile?: ConversationUserProfile;
+  slashCommands?: ConversationSlashCommand[];
+  workspacePath?: string;
+  newSessionTitle?: string;
+  hideComposer?: boolean;
+  statusPopoverContent?: ReactNode;
+  statusPopoverTitle?: ReactNode;
+  statusPopoverOpen?: boolean;
+  onStatusPopoverOpenChange?: (open: boolean) => void;
+  onNewSession?: () => void;
+  onSelectSession?: (sessionId: string, session: ConversationSession) => void;
+  onSendMessage?: (text: string) => void;
+  onApprove?: (requestId: string, decision: string) => void;
+  onSlashCommandSelect?: (command: ConversationSlashCommand) => void;
+}
