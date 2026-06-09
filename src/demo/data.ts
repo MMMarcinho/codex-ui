@@ -11,7 +11,7 @@ export const sessions: ConversationSession[] = [
     mode: 'live',
     source: 'demo',
     readOnly: false,
-    cwd: '/Users/marco/github/codex-ui',
+    cwd: '/workspace/codex-ui',
     updatedAt: '刚刚',
   },
   {
@@ -20,7 +20,7 @@ export const sessions: ConversationSession[] = [
     mode: 'history',
     source: 'demo',
     readOnly: true,
-    cwd: '/Users/marco/Desktop/code/ai/aima-workspace',
+    cwd: '/workspace/aima-workspace',
     updatedAt: '18 分钟前',
   },
   {
