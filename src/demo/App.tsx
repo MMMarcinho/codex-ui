@@ -21,6 +21,12 @@ export function App() {
   const activeMessages = messages[activeSessionId] || [];
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('source') === 'seed' || params.get('demo') === 'seed') {
+      setUsingLocalData(false);
+      return;
+    }
+
     let cancelled = false;
 
     fetch('/api/codex-sessions')
