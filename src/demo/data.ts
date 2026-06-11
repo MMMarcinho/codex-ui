@@ -43,18 +43,40 @@ export const messagesBySession: Record<string, ConversationMessage[]> = {
     {
       id: 'm2',
       role: 'assistant',
+      timestamp: '2026-06-11T09:20:06.000Z',
       text: '我会把源项目里的 ConversationView 拆成可导出的 React 组件，同时保留 demo 入口用于本地预览。\n\n核心库会避免 AIMA 业务依赖，也不要求消费者安装 antd。',
     },
     {
       id: 'm3',
       role: 'tool',
-      text: 'migrated: ConversationView / MessageList / Composer / SessionTabs\nadded: CodexWindow shell, Vite library build, TypeScript declarations',
+      text: 'src/components/ConversationView/ConversationView.tsx\nsrc/components/ConversationView/MessageList.tsx\nsrc/components/ConversationView/ConversationView.module.css',
+      toolSummary: {
+        icon: 'folders',
+        label: '已探索 3 个文件',
+        category: 'explore',
+        count: 3,
+        details: [
+          {
+            label: 'Read ConversationView.tsx',
+            category: 'explore',
+          },
+          {
+            label: 'Read MessageList.tsx',
+            category: 'explore',
+          },
+          {
+            label: 'Read ConversationView.module.css',
+            category: 'explore',
+          },
+        ],
+      },
     },
     {
       id: 'm4',
       role: 'assistant',
+      timestamp: '2026-06-11T09:20:28.000Z',
       streaming: true,
-      text: '组件库入口导出 `ConversationView`、`CodexWindow`、类型定义和能力 helpers。\n\n```tsx\nimport { ConversationView, CodexWindow } from \"codex-ui\";\nimport \"codex-ui/style.css\";\n```',
+      text: '组件库入口导出 `ConversationView`、`CodexWindow`、类型定义和能力 helpers。\n\n```tsx\nimport { ConversationView, CodexWindow } from "codex-ui";\nimport "codex-ui/style.css";\n```',
     },
   ],
   'conversation-view': [

@@ -43,6 +43,12 @@ interface ParsedMessage {
   id: string;
   role: 'user' | 'assistant' | 'tool' | 'system';
   text: string;
+  toolCall?: {
+    toolName: string;
+    toolArgs?: string;
+    status?: 'running' | 'done' | 'error';
+    exitCode?: number;
+  };
 }
 
 interface ParsedSession {
@@ -168,25 +174,29 @@ function rowToMessage(row: Record<string, any>, index: number): ParsedMessage[] 
   }
 
   if (row.type === 'response_item' && payload.type === 'function_call') {
+    const toolName = String(payload.name || 'tool');
+    const toolArgs = String(payload.arguments || '');
     return [
       {
         id: `${row.timestamp || 'tool-call'}-${index}`,
         role: 'tool',
-        text: trimToolMessage(
-          [payload.name, payload.arguments]
-            .filter(Boolean)
-            .join('\n'),
-        ),
+        text: trimToolMessage([toolName, toolArgs].filter(Boolean).join('\n')),
+        toolCall: {
+          toolName,
+          toolArgs,
+          status: 'done',
+        },
       },
     ];
   }
 
   if (row.type === 'response_item' && payload.type === 'function_call_output') {
+    const output = String(payload.output || '');
     return [
       {
         id: `${row.timestamp || 'tool-output'}-${index}`,
         role: 'tool',
-        text: trimToolMessage(String(payload.output || '')),
+        text: trimToolMessage(output),
       },
     ];
   }

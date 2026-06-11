@@ -23,6 +23,7 @@ export function ConversationView({
   workspacePath,
   newSessionTitle = '新建会话',
   hideComposer,
+  responding,
   statusPopoverContent,
   statusPopoverTitle,
   statusPopoverOpen,
@@ -188,6 +189,7 @@ export function ConversationView({
           messages={messages}
           userProfile={userProfile}
           canApprove={resolvedCapabilities.canApprove}
+          responding={responding}
           onApprove={onApprove}
         />
       </section>

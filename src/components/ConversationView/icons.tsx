@@ -51,3 +51,62 @@ export function AlertIcon(props: IconProps) {
     </IconBase>
   );
 }
+
+export function ChevronRightIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <path d="m9 18 6-6-6-6" />
+    </IconBase>
+  );
+}
+
+export function ChevronDownIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <path d="m6 9 6 6 6-6" />
+    </IconBase>
+  );
+}
+
+export function SearchIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <circle cx="11" cy="11" r="7" />
+      <path d="m20 20-3.5-3.5" />
+    </IconBase>
+  );
+}
+
+export function TerminalIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <path d="m7 8 4 4-4 4M13 16h4" />
+    </IconBase>
+  );
+}
+
+export function EditIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <path d="M12 20h9" />
+      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+    </IconBase>
+  );
+}
+
+export function FoldersIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <path d="M3 7h6l2 2h10v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" />
+      <path d="M3 7V5a2 2 0 0 1 2-2h4l2 2h7a2 2 0 0 1 2 2v2" />
+    </IconBase>
+  );
+}
+
+export function ZapIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <path d="M13 2 4 14h7l-1 8 9-12h-7Z" />
+    </IconBase>
+  );
+}

@@ -15,6 +15,34 @@ export type ConversationRole =
   | 'tool'
   | 'approval';
 
+export interface ToolCallInfo {
+  toolName: string;
+  toolArgs?: string;
+  status?: 'running' | 'done' | 'error';
+  exitCode?: number;
+}
+
+export interface ToolDetailItem {
+  label: string;
+  category?: 'explore' | 'edit' | 'search' | 'run';
+  command?: string;
+  output?: string;
+  exitCode?: number;
+}
+
+export interface ToolSummaryInfo {
+  icon: string;
+  label: string;
+  category: 'explore' | 'edit' | 'search' | 'run';
+  count: number;
+  details?: ToolDetailItem[];
+}
+
+export interface TurnFoldInfo {
+  durationSeconds: number;
+  foldedMessages: ConversationMessage[];
+}
+
 export interface ConversationMessage {
   id?: string;
   role: ConversationRole;
@@ -24,6 +52,9 @@ export interface ConversationMessage {
   streaming?: boolean;
   requestId?: string;
   decision?: string;
+  toolCall?: ToolCallInfo;
+  toolSummary?: ToolSummaryInfo;
+  turnFold?: TurnFoldInfo;
 }
 
 export interface ConversationSession {
@@ -91,6 +122,7 @@ export interface ConversationViewProps {
   workspacePath?: string;
   newSessionTitle?: string;
   hideComposer?: boolean;
+  responding?: boolean;
   statusPopoverContent?: ReactNode;
   statusPopoverTitle?: ReactNode;
   statusPopoverOpen?: boolean;
