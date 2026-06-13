@@ -1,15 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
 import { composerPlaceholder } from './capabilities';
-import { ArrowUpIcon } from './icons';
+import { ArrowUpIcon, LoadingIcon } from './icons';
 import type {
   ConversationCapabilities,
   ConversationSlashCommand,
+  ConversationSteerMessage,
 } from './types';
 import styles from './ConversationView.module.css';
 
 interface ComposerProps {
   ready: boolean;
+  responding?: boolean;
   capabilities: ConversationCapabilities;
+  steerMessage?: ConversationSteerMessage;
   slashCommands?: ConversationSlashCommand[];
   onSend?: (text: string) => void;
   onSlashCommandSelect?: (command: ConversationSlashCommand) => void;
@@ -49,7 +52,9 @@ function resizeComposerTextarea(textarea: HTMLTextAreaElement) {
 
 export function Composer({
   ready,
+  responding = false,
   capabilities,
+  steerMessage,
   slashCommands = [],
   onSend,
   onSlashCommandSelect,
@@ -57,8 +62,21 @@ export function Composer({
   const [value, setValue] = useState('');
   const [focused, setFocused] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const composingRef = useRef(false);
   const readOnly = capabilities.readOnly;
-  const disabled = !ready || readOnly || !capabilities.canSendMessage;
+  const steerCapacityFull = responding && Boolean(steerMessage);
+  const canSubmitMessage = responding
+    ? Boolean(
+        capabilities.canSendMessage &&
+          capabilities.canSteer &&
+          !steerCapacityFull,
+      )
+    : capabilities.canSendMessage;
+  const disabled = !ready || readOnly || !canSubmitMessage;
+  const sendButtonTitle = responding ? '发送引导' : '发送';
+  const placeholder = responding
+    ? '要求后续变更'
+    : composerPlaceholder(capabilities);
 
   useEffect(() => {
     const textarea = textareaRef.current;
@@ -93,6 +111,21 @@ export function Composer({
   return (
     <section className={styles.composer}>
       <div className={styles.promptWrap}>
+        {steerMessage ? (
+          <div
+            className={styles.steerCard}
+            data-status={steerMessage.status || 'sending'}
+          >
+            <span className={styles.steerCardText}>
+              <span className={styles.steerCardArrow}>↪</span>
+              <span>{steerMessage.text}</span>
+            </span>
+            <span className={styles.steerCardBadge}>
+              <span className={styles.steerCardArrow}>↪</span>
+              引导
+            </span>
+          </div>
+        ) : null}
         {showSlashMenu && (
           <div className={styles.slashMenu}>
             {filteredCommands.map((command) => (
@@ -122,12 +155,19 @@ export function Composer({
           rows={1}
           value={value}
           disabled={disabled}
-          placeholder={composerPlaceholder(capabilities)}
+          placeholder={placeholder}
           onFocus={() => setFocused(true)}
           onBlur={() => window.setTimeout(() => setFocused(false), 120)}
           onChange={(event) => setValue(event.target.value)}
+          onCompositionStart={() => {
+            composingRef.current = true;
+          }}
+          onCompositionEnd={() => {
+            composingRef.current = false;
+          }}
           onKeyDown={(event) => {
             if (event.key !== 'Enter' || event.shiftKey) return;
+            if (composingRef.current) return;
             event.preventDefault();
             submit();
           }}
@@ -135,11 +175,11 @@ export function Composer({
         <button
           className={styles.sendButton}
           type="button"
-          title="发送"
+          title={sendButtonTitle}
           disabled={disabled || !value.trim()}
           onClick={submit}
         >
-          <ArrowUpIcon />
+          {responding ? <LoadingIcon className={styles.loadingIcon} /> : <ArrowUpIcon />}
         </button>
       </div>
     </section>

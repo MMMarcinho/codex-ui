@@ -19,6 +19,7 @@ export function App() {
     [activeSessionId, sessions],
   );
   const activeMessages = messages[activeSessionId] || [];
+  const responding = activeMessages.some((message) => message.streaming);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -99,6 +100,7 @@ export function App() {
           sessions={sessions}
           activeSessionId={activeSessionId}
           messages={activeMessages}
+          responding={responding}
           workspacePath={activeSession?.cwd}
           slashCommands={slashCommands}
           userProfile={{ label: '你', title: '本地开发者' }}

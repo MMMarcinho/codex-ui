@@ -26,7 +26,9 @@
 
 - 768px 窄消息列、无卡片 assistant 回复、右侧用户气泡和底部 Codex 风格 composer。
 - 工具调用折叠为 `已探索 / 已编辑 / 已运行` 的轻量摘要行，支持展开查看明细。
-- 会话处理中状态、streaming 文案、长会话窗口化加载和系统 prompt 过滤。
+- 会话处理中状态、streaming 打字效果、长会话窗口化加载和系统 prompt 过滤。
+- Codex 记忆 citation 会从 assistant 正文中剥离，渲染为可展开的“记忆引用”块。
+- responding 时支持“要求后续变更”的 steer 输入态。
 - 内置轻量 markdown 渲染，支持代码块、列表、标题、链接和本地文件路径样式。
 
 ## 开发

@@ -1210,6 +1210,83 @@
   margin-bottom: -8px;
 }
 
+.memoryReferenceBlock {
+  display: flex;
+  max-width: 100%;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0 20px 8px;
+}
+
+.memoryReferenceHeader {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  background: transparent;
+  color: #8b8f94;
+  cursor: pointer;
+  font: 400 14px/1.4 Inter, ui-sans-serif, system-ui, sans-serif;
+  padding: 0;
+  text-align: left;
+}
+
+.memoryReferenceHeader:hover {
+  color: #333;
+}
+
+.memoryReferenceChevron {
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+  align-items: center;
+  color: #8b8f94;
+}
+
+.memoryReferenceList {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.memoryReferenceItem {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.memoryReferenceTitle {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  gap: 10px;
+  color: #4f5358;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.memoryReferenceFile {
+  overflow: hidden;
+  min-width: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.memoryReferenceLines {
+  flex-shrink: 0;
+  color: #aeb4ba;
+}
+
+.memoryReferenceNote {
+  overflow-wrap: anywhere;
+  color: #8b8f94;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
 .systemText {
   max-width: 100%;
   overflow-wrap: anywhere;
@@ -1293,7 +1370,7 @@
   width: 100%;
   max-width: 768px;
   min-height: 52px;
-  grid-template-columns: minmax(0, 1fr) 36px;
+  grid-template-columns: minmax(0, 1fr) 40px;
   gap: 8px;
   align-items: end;
   border-color: #e8e8e8;
@@ -1315,6 +1392,54 @@
   font-size: 15px;
   line-height: 24px;
   padding: 6px 0;
+}
+
+.steerCard {
+  display: grid;
+  min-height: 42px;
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid #ececec;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  color: #666;
+  font-size: 14px;
+  line-height: 20px;
+  padding: 9px 12px;
+}
+
+.steerCardText {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+
+.steerCardText span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.steerCardArrow {
+  flex: 0 0 auto;
+  color: #8a8a8a;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.steerCardBadge {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 6px;
+  color: #666;
+  font-size: 13px;
+  white-space: nowrap;
 }
 
 .readOnlyComposer {
@@ -1341,6 +1466,10 @@
   color: #b4b4b4;
 }
 
+.loadingIcon {
+  animation: codexSpin 0.9s linear infinite;
+}
+
 .slashMenu {
   right: 0;
   bottom: calc(100% + 8px);
@@ -1356,6 +1485,12 @@
 
   to {
     background-position: -40% 0;
+  }
+}
+
+@keyframes codexSpin {
+  to {
+    transform: rotate(360deg);
   }
 }
 
@@ -1386,6 +1521,11 @@
   .assistantContent {
     padding-right: 4px;
     padding-left: 4px;
+  }
+
+  .memoryReferenceBlock {
+    margin-right: 4px;
+    margin-left: 4px;
   }
 
   .messageItemTool,

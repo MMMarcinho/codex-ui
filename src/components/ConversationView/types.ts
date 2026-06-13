@@ -43,6 +43,26 @@ export interface TurnFoldInfo {
   foldedMessages: ConversationMessage[];
 }
 
+export interface ConversationMemoryReference {
+  filePath: string;
+  lineStart?: number;
+  lineEnd?: number;
+  note?: string;
+  raw: string;
+}
+
+export interface ConversationMemoryReferenceGroup {
+  items: ConversationMemoryReference[];
+  rolloutIds?: string[];
+  raw?: string;
+}
+
+export interface ConversationSteerMessage {
+  id: string;
+  text: string;
+  status?: 'sending' | 'sent' | 'failed';
+}
+
 export interface ConversationMessage {
   id?: string;
   role: ConversationRole;
@@ -55,6 +75,7 @@ export interface ConversationMessage {
   toolCall?: ToolCallInfo;
   toolSummary?: ToolSummaryInfo;
   turnFold?: TurnFoldInfo;
+  memoryReferences?: ConversationMemoryReferenceGroup;
 }
 
 export interface ConversationSession {
@@ -77,6 +98,7 @@ export interface ConversationCapabilities {
   mode: ConversationMode;
   readOnly: boolean;
   canSendMessage: boolean;
+  canSteer?: boolean;
   canApprove: boolean;
   canSwitchLocalSession: boolean;
 }
@@ -114,6 +136,7 @@ export interface ConversationViewProps {
   sessions: ConversationSession[];
   activeSessionId?: string;
   messages: ConversationMessage[];
+  steerMessage?: ConversationSteerMessage;
   outputs?: ConversationOutput[];
   progress?: string;
   capabilities?: ConversationCapabilities;

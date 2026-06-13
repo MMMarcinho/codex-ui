@@ -4,6 +4,8 @@ export { ConversationView } from './components/ConversationView/ConversationView
 export { conversationCapabilities, composerPlaceholder } from './components/ConversationView/capabilities';
 export type {
   ConversationCapabilities,
+  ConversationMemoryReference,
+  ConversationMemoryReferenceGroup,
   ConversationMessage,
   ConversationMode,
   ConversationOutput,
@@ -11,6 +13,7 @@ export type {
   ConversationSession,
   ConversationSlashCommand,
   ConversationSource,
+  ConversationSteerMessage,
   ConversationUserProfile,
   ConversationViewModel,
   ConversationViewProps,

@@ -44,7 +44,7 @@ export const messagesBySession: Record<string, ConversationMessage[]> = {
       id: 'm2',
       role: 'assistant',
       timestamp: '2026-06-11T09:20:06.000Z',
-      text: '我会把源项目里的 ConversationView 拆成可导出的 React 组件，同时保留 demo 入口用于本地预览。\n\n核心库会避免 AIMA 业务依赖，也不要求消费者安装 antd。',
+      text: '我会把源项目里的 ConversationView 拆成可导出的 React 组件，同时保留 demo 入口用于本地预览。\n\n核心库会避免 AIMA 业务依赖，也不要求消费者安装 antd。\n\n<oai-mem-citation>\n<citation_entries>\nsrc/components/ConversationView/MessageList.tsx:1-40|note=[组件库保留轻量内部实现，不引入源项目业务依赖]\n</citation_entries>\n</oai-mem-citation>',
     },
     {
       id: 'm3',

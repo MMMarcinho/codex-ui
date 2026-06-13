@@ -20,6 +20,7 @@ export function conversationCapabilities(
     mode: normalizedMode,
     readOnly: !live,
     canSendMessage: live,
+    canSteer: live,
     canApprove: live,
     canSwitchLocalSession: live,
     ...overrides,

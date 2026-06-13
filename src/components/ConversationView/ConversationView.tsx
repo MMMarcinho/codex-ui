@@ -17,6 +17,7 @@ export function ConversationView({
   sessions,
   activeSessionId,
   messages,
+  steerMessage,
   capabilities,
   userProfile,
   slashCommands,
@@ -197,6 +198,8 @@ export function ConversationView({
       {!hideComposer && (
         <Composer
           ready={ready}
+          responding={responding}
+          steerMessage={steerMessage}
           capabilities={resolvedCapabilities}
           slashCommands={slashCommands}
           onSend={onSendMessage}

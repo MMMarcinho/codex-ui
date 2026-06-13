@@ -17,7 +17,10 @@ import {
   ZapIcon,
 } from './icons';
 import { renderMarkdown } from './markdown';
+import { normalizeMessageMemoryReferences } from './memoryReferences';
+import { filterSystemPromptMessages } from './systemPromptMessages';
 import type {
+  ConversationMemoryReferenceGroup,
   ConversationMessage,
   ConversationUserProfile,
   ToolDetailItem,
@@ -219,20 +222,6 @@ function buildFoldedMessages(messages: ConversationMessage[]) {
     result.push(buildToolSummaryFromGroup(group));
   }
   return result;
-}
-
-const SYSTEM_PROMPT_PREFIXES = [
-  '<permissions instructions>',
-  '# AGENTS.md',
-  '<environment_context>',
-];
-
-function filterSystemPromptMessages(messages: ConversationMessage[]) {
-  return messages.filter((msg) => {
-    if (msg.role !== 'user') return true;
-    const trimmed = msg.text.trimStart();
-    return !SYSTEM_PROMPT_PREFIXES.some((prefix) => trimmed.startsWith(prefix));
-  });
 }
 
 function autoFoldLiveTurns(messages: ConversationMessage[]) {
@@ -479,28 +468,139 @@ function StreamingIndicator() {
   );
 }
 
+function StreamingAssistantContent({
+  text,
+  onProgress,
+}: {
+  text: string;
+  onProgress?: () => void;
+}) {
+  const [charIndex, setCharIndex] = useState(0);
+  const textRef = useRef(text);
+  const doneRef = useRef(false);
+
+  if (text !== textRef.current) {
+    textRef.current = text;
+    doneRef.current = false;
+  }
+
+  useEffect(() => {
+    if (charIndex >= text.length) {
+      doneRef.current = true;
+      return;
+    }
+
+    const totalFrames = Math.max(80, text.length / 2);
+    const charsPerTick = Math.max(1, Math.ceil(text.length / totalFrames));
+    const timer = window.setTimeout(() => {
+      setCharIndex((value) => Math.min(value + charsPerTick, text.length));
+      onProgress?.();
+    }, 30);
+    return () => window.clearTimeout(timer);
+  }, [charIndex, text, onProgress]);
+
+  const displayText = doneRef.current ? text : text.slice(0, charIndex);
+  const typing = !doneRef.current && charIndex < text.length;
+
+  return (
+    <div
+      className={[
+        styles.assistantContent,
+        typing ? styles.assistantTyping : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+      dangerouslySetInnerHTML={{ __html: renderMarkdown(displayText) }}
+    />
+  );
+}
+
+function MemoryReferenceFold({
+  references,
+}: {
+  references?: ConversationMemoryReferenceGroup;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const items = references?.items || [];
+  if (!items.length) return null;
+
+  return (
+    <div className={styles.memoryReferenceBlock}>
+      <button
+        type="button"
+        className={styles.memoryReferenceHeader}
+        aria-expanded={expanded}
+        onClick={() => setExpanded((value) => !value)}
+      >
+        <span className={styles.memoryReferenceChevron}>
+          {expanded ? <ChevronDownIcon /> : <ChevronRightIcon />}
+        </span>
+        <span>{items.length} 条记忆引用</span>
+      </button>
+      {expanded && (
+        <div className={styles.memoryReferenceList}>
+          {items.map((item, index) => {
+            const lineText =
+              item.lineStart && item.lineEnd
+                ? item.lineStart === item.lineEnd
+                  ? `${item.lineStart} 行`
+                  : `${item.lineStart}-${item.lineEnd} 行`
+                : '';
+            return (
+              <div
+                key={`${item.filePath}-${item.lineStart || index}`}
+                className={styles.memoryReferenceItem}
+              >
+                <div className={styles.memoryReferenceTitle}>
+                  <span className={styles.memoryReferenceFile}>
+                    {item.filePath}
+                  </span>
+                  {lineText && (
+                    <span className={styles.memoryReferenceLines}>
+                      {lineText}
+                    </span>
+                  )}
+                </div>
+                {item.note && (
+                  <div className={styles.memoryReferenceNote}>{item.note}</div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function MessageItem({
   message,
   canApprove,
+  onScrollBottom,
   onApprove,
 }: {
   message: ConversationMessage;
   userProfile?: ConversationUserProfile;
   canApprove?: boolean;
+  onScrollBottom?: () => void;
   onApprove?: (requestId: string, decision: string) => void;
 }) {
+  const displayMessage = useMemo(
+    () => normalizeMessageMemoryReferences(message),
+    [message],
+  );
   const [foldExpanded, setFoldExpanded] = useState(false);
 
-  if (message.role === 'user') {
+  if (displayMessage.role === 'user') {
     return (
       <div className={`${styles.messageItem} ${styles.messageItemUser}`}>
-        <div className={styles.userBubble}>{message.text}</div>
+        <div className={styles.userBubble}>{displayMessage.text}</div>
       </div>
     );
   }
 
-  if (message.role === 'assistant' && message.turnFold) {
-    const seconds = message.turnFold.durationSeconds;
+  if (displayMessage.role === 'assistant' && displayMessage.turnFold) {
+    const seconds = displayMessage.turnFold.durationSeconds;
     const durationText =
       seconds <= 0
         ? ''
@@ -548,51 +648,69 @@ function MessageItem({
                 .filter(Boolean)
                 .join(' ')}
             >
-              {message.turnFold.foldedMessages.map((item, index) => (
+              {displayMessage.turnFold.foldedMessages.map((item, index) => (
                 <MessageItem key={item.id || `fold-${index}`} message={item} />
               ))}
             </div>
           </div>
           <div
             className={styles.assistantContent}
-            dangerouslySetInnerHTML={{ __html: renderMarkdown(message.text) }}
+            dangerouslySetInnerHTML={{
+              __html: renderMarkdown(displayMessage.text),
+            }}
+          />
+          <MemoryReferenceFold
+            references={displayMessage.memoryReferences}
           />
         </div>
       </div>
     );
   }
 
-  if (message.role === 'assistant') {
+  if (displayMessage.role === 'assistant') {
+    if (displayMessage.streaming) {
+      return (
+        <div className={`${styles.messageItem} ${styles.messageItemAssistant}`}>
+          <StreamingAssistantContent
+            text={displayMessage.text}
+            onProgress={onScrollBottom}
+          />
+          <MemoryReferenceFold
+            references={displayMessage.memoryReferences}
+          />
+        </div>
+      );
+    }
     return (
       <div className={`${styles.messageItem} ${styles.messageItemAssistant}`}>
         <div
-          className={[
-            styles.assistantContent,
-            message.streaming ? styles.assistantTyping : '',
-          ]
-            .filter(Boolean)
-            .join(' ')}
-          dangerouslySetInnerHTML={{ __html: renderMarkdown(message.text) }}
+          className={styles.assistantContent}
+          dangerouslySetInnerHTML={{
+            __html: renderMarkdown(displayMessage.text),
+          }}
+        />
+        <MemoryReferenceFold
+          references={displayMessage.memoryReferences}
         />
       </div>
     );
   }
 
-  if (message.role === 'tool' && message.toolSummary) {
+  if (displayMessage.role === 'tool' && displayMessage.toolSummary) {
     return (
       <div className={`${styles.messageItem} ${styles.messageItemTool}`}>
-        <ToolSummaryLine message={message} />
+        <ToolSummaryLine message={displayMessage} />
       </div>
     );
   }
 
-  if (message.role === 'tool' && message.toolCall) {
+  if (displayMessage.role === 'tool' && displayMessage.toolCall) {
     const category = classifyToolCall(
-      message.toolCall.toolName,
-      message.toolCall.toolArgs,
+      displayMessage.toolCall.toolName,
+      displayMessage.toolCall.toolArgs,
     ).category;
     const summaryMessage: ConversationMessage = {
-      ...message,
+      ...displayMessage,
       toolSummary: {
         icon:
           category === 'run'
@@ -601,8 +719,8 @@ function MessageItem({
               ? 'folders'
               : category,
         label:
-          message.toolCall.status === 'running'
-            ? `正在运行 ${message.toolCall.toolName}`
+          displayMessage.toolCall.status === 'running'
+            ? `正在运行 ${displayMessage.toolCall.toolName}`
             : category === 'run'
               ? '已运行 1 条命令'
               : category === 'edit'
@@ -615,13 +733,13 @@ function MessageItem({
         details: [
           {
             label: extractToolDetail(
-              message.toolCall.toolName,
-              message.toolCall.toolArgs,
+              displayMessage.toolCall.toolName,
+              displayMessage.toolCall.toolArgs,
             ),
             category,
-            command: message.toolCall.toolArgs,
-            output: message.text,
-            exitCode: message.toolCall.exitCode ?? 0,
+            command: displayMessage.toolCall.toolArgs,
+            output: displayMessage.text,
+            exitCode: displayMessage.toolCall.exitCode ?? 0,
           },
         ],
       },
@@ -633,12 +751,12 @@ function MessageItem({
     );
   }
 
-  if (message.role === 'approval') {
+  if (displayMessage.role === 'approval') {
     return (
       <div className={`${styles.messageItem} ${styles.messageItemApproval}`}>
         <div className={styles.approvalBlock}>
-          <pre className={styles.approvalPre}>{message.text}</pre>
-          {message.requestId && canApprove && !message.decision && (
+          <pre className={styles.approvalPre}>{displayMessage.text}</pre>
+          {displayMessage.requestId && canApprove && !displayMessage.decision && (
             <div className={styles.approvalActions}>
               {(
                 [
@@ -656,24 +774,28 @@ function MessageItem({
                       ? styles.approvalBtnPrimary
                       : styles.approvalBtn
                   }
-                  onClick={() => onApprove?.(message.requestId!, decision)}
+                  onClick={() =>
+                    onApprove?.(displayMessage.requestId!, decision)
+                  }
                 >
                   {label}
                 </button>
               ))}
             </div>
           )}
-          {message.decision && (
-            <p className={styles.approvalNote}>已回复：{message.decision}</p>
+          {displayMessage.decision && (
+            <p className={styles.approvalNote}>
+              已回复：{displayMessage.decision}
+            </p>
           )}
         </div>
       </div>
     );
   }
 
-  return message.role !== 'tool' ? (
+  return displayMessage.role !== 'tool' ? (
     <div className={`${styles.messageItem} ${styles.messageItemSystem}`}>
-      <span className={styles.systemText}>{message.text}</span>
+      <span className={styles.systemText}>{displayMessage.text}</span>
     </div>
   ) : null;
 }
@@ -695,7 +817,9 @@ export function MessageList({
   );
 
   const visibleMessages = useMemo(() => {
-    if (messages.length) return autoFoldLiveTurns(filterSystemPromptMessages(messages));
+    if (messages.length) {
+      return autoFoldLiveTurns(filterSystemPromptMessages(messages));
+    }
     return [
       {
         id: 'empty',
@@ -830,6 +954,7 @@ export function MessageList({
               message={message}
               userProfile={userProfile}
               canApprove={canApprove}
+              onScrollBottom={scrollToBottom}
               onApprove={onApprove}
             />
             {processingInfo && index === processingInfo.insertAfterIndex && (
