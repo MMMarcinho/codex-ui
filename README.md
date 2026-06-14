@@ -2,10 +2,6 @@
 
 开箱即用的 Codex 风格 React UI 组件库。
 
-当前版本同步本地 `~/Desktop/code/ai/aima-workspace` 的
-`src/pages/workspace/cx/components/ConversationView` 最新效果，把 Codex
-桌面端会话 UI 迁移成可复用 React 组件，并提供 Vite demo 预览。
-
 ## 预览
 
 桌面视图：
